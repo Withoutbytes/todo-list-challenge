@@ -17,6 +17,9 @@ Deploy feito no seguinte url: https://todo-list-challenge-zeta.vercel.app
 - yarn
 - yarn dev
 
+## ENV
+DATABASE_URL=mongodb+srv://<username>:<password>@mongodb.net/?retryWrites=true&w=majority
+
 ## Tecnologias
 - Next.js
 - React.js
