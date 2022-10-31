@@ -1,101 +1,128 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
 import CustomCheckbox from "../components/CustomCheckbox";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import { useState } from "react";
-
-const tasks = [
-	{
-		id: 1,
-		name: "This is task 1",
-		completed: false,
-	},
-	{
-		id: 2,
-		name: "This is task 2",
-		completed: false,
-	},
-	{
-		id: 3,
-		name: "This is task 3",
-		completed: false,
-	},
-	{
-		id: 4,
-		name: "This is task 4",
-		completed: false,
-	},
-	{
-		id: 5,
-		name: "This is task 5",
-		completed: false,
-	},
-	{
-		id: 6,
-		name: "This is task 6",
-		completed: false,
-	},
-	{
-		id: 7,
-		name: "This is task 7",
-		completed: false,
-	},
-	{
-		id: 8,
-		name: "This is task 8",
-		completed: false,
-	},
-	{
-		id: 9,
-		name: "This is task 9",
-		completed: false,
-	},
-	{
-		id: 10,
-		name: "This is task 10",
-		completed: false,
-	},
-];
+import { useRef } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import * as api from "../lib/api";
+import { Grid } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 const Home: NextPage = () => {
-	const [allChecked, setAllChecked] = useState(false);
-	return (
-		<div className="flex w-screen justify-center min-h-screen bg-secondary">
-			<div className="container flex flex-col py-4 space-y-6 rounded-b 2xl:max-w-screen-xl bg-common-50 px-10 md:py-8 xl:px-36 mt-32">
-				<div>
-					<h1 className="text-7xl font-semibold text-primary">TO DO LIST</h1>
-				</div>
-				<div className="flex items-center">
-					<CustomCheckbox checked={allChecked} onChange={(c) => setAllChecked(c)} />
-					<input
-						type="text"
-						placeholder="Type your task"
-						className="px-2 py-1 rounded-xl bg-transparent ml-2 border border-tertiary focus:ring-0 w-full"
-					/>
-					<button className="px-5 py-4 rounded-xl bg-primary text-secondary font-extralight flex items-center">
-						Insert <MdOutlineModeEditOutline className="ml-1 w-5 h-5" />
-					</button>
-				</div>
-				<div>
-					<ul>
-						{tasks.map((t, i) => (
-							<li className="flex items-center my-2" key={t.id}>
-								<CustomCheckbox checked={t.completed} onChange={(c) => setAllChecked(c)} />
-								<input
-									disabled
-									className="mx-1 px-2 py-1 rounded-xl bg-transparent border border-tertiary focus:ring-0 w-full"
-									value={t.name}
-								/>
+	const refTaskInputName = useRef<HTMLInputElement>(null);
+	const {
+		isLoading: isTasksLoading,
+		data: tasks,
+		refetch: refetchTasks,
+	} = useQuery(["tasks"], () => api.getTasks(), {
+		onError: (error) => {
+			toast.error("Erro ao carregar tarefas");
+		},
+	});
+	const { mutate: createTask } = useMutation(api.createTask, {
+		onSuccess: () => refetchTasks(),
+		onError: (error) => {
+			toast.error("Erro ao criar tarefa");
+		},
+	});
+	const { mutate: updateTask } = useMutation(api.updateTask, {
+		onSuccess: () => refetchTasks(),
+		onError: (error) => {
+			toast.error("Erro ao atualizar tarefa");
+		},
+	});
+	const { mutate: deleteTask } = useMutation(api.deleteTask, {
+		onSuccess: () => refetchTasks(),
+		onError: (error) => {
+			toast.error("Erro ao deletar tarefa");
+		},
+	});
+	const { mutate: checkAllTasks } = useMutation(api.checkAllTasks, {
+		onSuccess: () => refetchTasks(),
+		onError: (error) => {
+			toast.error("Erro ao marcar todas as tarefas");
+		},
+	});
 
-								<button className="bg-quartiary w-10 h-10 rounded-xl inline-flex justify-center items-center shadow-xl">
-									<FaTrash className="w-4 h-5" />
-								</button>
-							</li>
-						))}
-					</ul>
+	const handleCraeteTask = async () => {
+		const taskName = refTaskInputName.current?.value;
+		if (taskName) {
+			await createTask(taskName);
+			refTaskInputName.current!.value = "";
+		}
+	};
+
+	return (
+		<div className="fixed flex justify-center w-screen min-h-screen bg-secondary">
+			<div className="container flex flex-col px-10 py-4 mt-32 space-y-6 rounded-b 2xl:max-w-screen-xl bg-common-50 md:py-8 xl:px-36">
+				<div>
+					<h1 className="font-semibold text-7xl text-primary">TO DO LIST</h1>
 				</div>
+
+				{isTasksLoading || !tasks ? (
+					<>
+						<Grid
+							height="80"
+							width="80"
+							color="#4fa94d"
+							ariaLabel="grid-loading"
+							radius="12.5"
+							wrapperStyle={{}}
+							wrapperClass=""
+							visible={true}
+						/>
+					</>
+				) : (
+					<>
+						<div className="flex items-center">
+							<CustomCheckbox
+								checked={tasks.every((v) => v.completed === true)}
+								onChange={(c) => checkAllTasks(c)}
+							/>
+							<input
+								type="text"
+								placeholder="Type your task"
+								className="w-full px-2 py-1 ml-2 bg-transparent border rounded-xl border-tertiary focus:ring-0"
+								ref={refTaskInputName}
+							/>
+							<button
+								className="flex items-center px-5 py-4 rounded-xl bg-primary text-secondary font-extralight"
+								onClick={handleCraeteTask}
+							>
+								Insert <MdOutlineModeEditOutline className="w-5 h-5 ml-1" />
+							</button>
+						</div>
+						<div>
+							<ul>
+								{tasks.map((t, i) => (
+									<li className="flex items-center my-2" key={t._id}>
+										<CustomCheckbox
+											checked={t.completed}
+											onChange={(c) =>
+												updateTask({
+													id: t._id,
+													completed: c,
+												})
+											}
+										/>
+										<input
+											disabled
+											className="w-full px-2 py-1 mx-1 bg-transparent border rounded-xl border-tertiary focus:ring-0"
+											value={t.name}
+										/>
+
+										<button
+											className="inline-flex items-center justify-center w-10 h-10 shadow-xl bg-quartiary rounded-xl"
+											onClick={() => deleteTask(t._id)}
+										>
+											<FaTrash className="w-4 h-5" />
+										</button>
+									</li>
+								))}
+							</ul>
+						</div>
+					</>
+				)}
 			</div>
 		</div>
 	);
