@@ -17,6 +17,10 @@ Deploy feito no seguinte url: https://todo-list-challenge-zeta.vercel.app
 - yarn
 - yarn dev
 
+## Design
+O design foi feito no figma, segue o link:
+https://www.figma.com/file/btY0gv4Q3yQ5tegqVNiNyE/Mute---To-do-list-(Page)?node-id=1%3A2
+
 ## Tecnologias
 - Next.js
 - React.js
