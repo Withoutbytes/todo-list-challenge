@@ -21,6 +21,9 @@ Deploy feito no seguinte url: https://todo-list-challenge-zeta.vercel.app
 O design foi feito no figma, segue o link:
 https://www.figma.com/file/btY0gv4Q3yQ5tegqVNiNyE/Mute---To-do-list-(Page)?node-id=1%3A2
 
+## Configuração
+Configure o `NEXT_PUBLIC_API_URL=http://localhost:49167` para o endereço do backend.
+
 ## Tecnologias
 - Next.js
 - React.js

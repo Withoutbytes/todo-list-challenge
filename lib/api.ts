@@ -1,37 +1,37 @@
 import axios from "axios";
 
 export const api = axios.create({
-	baseURL: "/api",
+	baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 interface ITask {
-	_id: string;
+	id: string;
 	name: string;
 	completed: boolean;
 	createdAt: string;
 }
 
 export const getTasks = async () => {
-	const { data } = await api.get("/tasks");
-	return data.tasks as ITask[];
+	const { data } = await api.get("/Tasks");
+	return data as ITask[];
 };
 
 export const createTask = async (name: string) => {
-	const { data } = await api.post("/tasks", { name });
-	return data.task as ITask;
+	const { data } = await api.post<ITask>("/Tasks", { name });
+	return data;
 };
 
 export const updateTask = async ({ id, completed }: { id: string; completed: boolean }) => {
-	const { data } = await api.put("/tasks", { id, completed });
-	return data.task as ITask;
+	const { data } = await api.put<boolean>("/Tasks/" + id, { completed });
+	return data;
 };
 
 export const deleteTask = async (id: string) => {
-	const { data } = await api.delete("/tasks", { data: { id } });
-	return data.task as ITask;
+	const { data } = await api.delete<boolean>("/Tasks/" + id, { data: { id } });
+	return data;
 };
 
 export const checkAllTasks = async (completed: boolean) => {
-	const { data } = await api.put("/check-all", { completed });
-	return data.tasks as ITask[];
+	const { data } = await api.put<boolean>("/Tasks/CheckAll", { completed });
+	return data;
 };

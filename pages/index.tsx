@@ -95,12 +95,12 @@ const Home: NextPage = () => {
 						<div>
 							<ul>
 								{tasks.map((t, i) => (
-									<li className="flex items-center my-2" key={t._id}>
+									<li className="flex items-center my-2" key={t.id}>
 										<CustomCheckbox
 											checked={t.completed}
 											onChange={(c) =>
 												updateTask({
-													id: t._id,
+													id: t.id,
 													completed: c,
 												})
 											}
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
 
 										<button
 											className="inline-flex items-center justify-center w-10 h-10 shadow-xl bg-quartiary rounded-xl"
-											onClick={() => deleteTask(t._id)}
+											onClick={() => deleteTask(t.id)}
 										>
 											<FaTrash className="w-4 h-5" />
 										</button>
