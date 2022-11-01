@@ -29,4 +29,4 @@ Configure o `NEXT_PUBLIC_API_URL=http://localhost:49167` para o endereço do bac
 - React.js
 - Mongodb
 - C#
-- MVC
+- ASP.Net
