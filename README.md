@@ -28,5 +28,3 @@ https://www.figma.com/file/btY0gv4Q3yQ5tegqVNiNyE/Mute---To-do-list-(Page)?node-
 - Next.js
 - React.js
 - Mongodb
-- C#
-- MVC
